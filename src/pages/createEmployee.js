@@ -177,7 +177,28 @@ const CreateEmployee = ({ testMenuIsOpen }) => {
 				Save
 			</button>
 
-			<Modal isOpen={modalIsOpen} onClose={() => setModalIsOpen(false)} />
+			<Modal
+				isOpen={modalIsOpen}
+				onClose={() => setModalIsOpen(false)}
+				title="Employee Created!"
+				style={{
+					modal: {
+						backgroundColor: "rgba(0, 0, 0, 0.5)",
+					},
+					title: {
+						padding: "0 100px",
+					},
+					body: {
+						backgroundColor: "#c8eaa2",
+						color: "#000000",
+					},
+					button: {
+						backgroundColor: "#000000",
+						color: "white",
+						fontSize: "20px",
+					},
+				}}
+			/>
 		</div>
 	);
 };
