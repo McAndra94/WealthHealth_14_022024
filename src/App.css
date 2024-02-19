@@ -1,0 +1,60 @@
+.App {
+	margin: 0 5%;
+}
+
+.title {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.container {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+}
+
+.formRow {
+	display: flex;
+	margin-bottom: 20px;
+}
+
+.formBox {
+	margin: 0 10px;
+}
+
+label {
+	display: block;
+	margin-top: 1rem;
+	margin-bottom: 10px;
+}
+
+input {
+	height: 30px;
+}
+
+.address {
+	margin-top: 10px;
+}
+
+button {
+	margin-top: 30px;
+	margin-bottom: 20px;
+}
+
+.search {
+	display: flex;
+	align-items: center;
+	margin-bottom: 10px;
+}
+
+.search label {
+	margin: 0 10px 2px 0;
+}
+
+.search input {
+	width: 200px;
+	height: 20px;
+	padding: 0 10px;
+}
