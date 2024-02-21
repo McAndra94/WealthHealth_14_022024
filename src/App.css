@@ -58,3 +58,9 @@ button {
 	height: 20px;
 	padding: 0 10px;
 }
+
+.warning {
+	color: red;
+	font-size: 20px;
+	margin-bottom: 20px;
+}

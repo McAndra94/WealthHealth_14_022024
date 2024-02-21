@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+// Import useDispatch, then the addEmployee action
+import { useDispatch, useSelector } from "react-redux";
 import ReactSelect from "react-select";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -6,8 +8,11 @@ import { states } from "../data/dataStates";
 import { departments } from "../data/dataDepartments";
 import Modal from "../components/modal";
 import "../components/modal.css";
+import { addEmployee } from "../redux/employeeSlice";
 
 const CreateEmployee = ({ testMenuIsOpen }) => {
+	const dispatch = useDispatch();
+	const employees = useSelector((state) => state.employee.employees);
 	const [firstName, setFirstName] = useState("");
 	const [lastName, setLastName] = useState("");
 	const [dateOfBirth, setDateOfBirth] = useState(new Date());
@@ -18,8 +23,9 @@ const CreateEmployee = ({ testMenuIsOpen }) => {
 	const [zipCode, setZipCode] = useState("");
 	const [department, setDepartment] = useState("");
 	const [modalIsOpen, setModalIsOpen] = useState(false);
+	const [warningMessage, setWarningMessage] = useState(""); // For displaying warning messages
 
-	// React Select expected options format
+	// ReactSelect expected options format
 	const stateOptions = states.map((state) => ({
 		value: state.abbreviation,
 		label: state.name,
@@ -29,24 +35,54 @@ const CreateEmployee = ({ testMenuIsOpen }) => {
 		label: dept,
 	}));
 
-	const saveEmployee = () => {
-		const existingEmployees =
-			JSON.parse(localStorage.getItem("employees")) || [];
+	const saveEmployee = async () => {
+		// Check if the fields are filled
+		if (
+			!firstName ||
+			!lastName ||
+			!street ||
+			!city ||
+			!zipCode ||
+			!state ||
+			!department
+		) {
+			// Stop the function if the fields aren't filled
+			alert("Fill in all the fields.");
+			return;
+		}
 
-		// Add the new employee to the array
-		const newEmployee = {
-			...employeeDetails,
-			// Store dates as ISO string
-			dateOfBirth: employeeDetails.dateOfBirth.toISOString(),
-			startDate: employeeDetails.startDate.toISOString(),
-		};
-		existingEmployees.push(newEmployee);
+		const duplicate = employees.some(
+			(emp) => emp.firstName === firstName && emp.lastName === lastName
+		);
 
-		// Save the updated array back to local storage
-		localStorage.setItem("employees", JSON.stringify(existingEmployees));
-		setModalIsOpen(true);
+		if (duplicate) {
+			setWarningMessage("An employee with the same name already exists.");
+		} else {
+			// Clear the warning message
+			setWarningMessage("");
 
-		// Reset form fields
+			const newEmployee = {
+				firstName,
+				lastName,
+				dateOfBirth: dateOfBirth.toISOString(),
+				startDate: startDate.toISOString(),
+				street,
+				city,
+				state,
+				zipCode,
+				department,
+			};
+
+			// Dispatch the addEmployee action
+			dispatch(addEmployee(newEmployee));
+
+			// Show the modal only on success then reset form
+			setModalIsOpen(true);
+			resetFormFields();
+		}
+	};
+
+	const resetFormFields = () => {
 		setFirstName("");
 		setLastName("");
 		setDateOfBirth(new Date());
@@ -54,18 +90,8 @@ const CreateEmployee = ({ testMenuIsOpen }) => {
 		setStreet("");
 		setCity("");
 		setZipCode("");
-	};
-
-	const employeeDetails = {
-		firstName,
-		lastName,
-		dateOfBirth,
-		startDate,
-		street,
-		city,
-		state,
-		zipCode,
-		department,
+		setState("");
+		setDepartment("");
 	};
 
 	return (
@@ -102,6 +128,9 @@ const CreateEmployee = ({ testMenuIsOpen }) => {
 							placeholderText="Select a date"
 							selected={dateOfBirth}
 							onChange={(date) => setDateOfBirth(date)}
+							showYearDropdown
+							scrollableYearDropdown
+							yearDropdownItemNumber={70}
 						/>
 					</div>
 					<div className="formBox">
@@ -110,6 +139,9 @@ const CreateEmployee = ({ testMenuIsOpen }) => {
 							placeholderText="Select a date"
 							selected={startDate}
 							onChange={(date) => setStartDate(date)}
+							showYearDropdown
+							scrollableYearDropdown
+							yearDropdownItemNumber={20}
 						/>
 					</div>
 				</div>
@@ -177,6 +209,7 @@ const CreateEmployee = ({ testMenuIsOpen }) => {
 				Save
 			</button>
 
+			{warningMessage && <div className="warning">{warningMessage}</div>}
 			<Modal
 				isOpen={modalIsOpen}
 				onClose={() => setModalIsOpen(false)}

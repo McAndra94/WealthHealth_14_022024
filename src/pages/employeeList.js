@@ -1,23 +1,14 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import DataTable from "react-data-table-component";
 import { Link } from "react-router-dom";
+import { deleteEmployee } from "../redux/employeeSlice";
 
 const EmployeeTable = () => {
-	const [employees, setEmployees] = useState([]);
+	// Access employees from Redux store
+	const employees = useSelector((state) => state.employee.employees);
+	const dispatch = useDispatch();
 	const [search, setSearch] = useState("");
-
-	useEffect(() => {
-		// Load employees from localStorage and update state
-		const storedEmployees = JSON.parse(localStorage.getItem("employees")) || [];
-		console.log(storedEmployees);
-
-		const employeesWithDates = storedEmployees.map((emp) => ({
-			...emp,
-			dateOfBirth: new Date(emp.dateOfBirth),
-			startDate: new Date(emp.startDate),
-		}));
-		setEmployees(employeesWithDates);
-	}, []);
 
 	const formatDate = (dateString) => {
 		const date = new Date(dateString);
@@ -42,7 +33,26 @@ const EmployeeTable = () => {
 		{ name: "City", selector: (row) => row.city, sortable: true },
 		{ name: "State", selector: (row) => row.state, sortable: true },
 		{ name: "Zip Code", selector: (row) => row.zipCode, sortable: true },
+		{
+			name: "Delete",
+			cell: (row) => (
+				<button
+					onClick={() => handleDelete(row)}
+					style={{ backgroundColor: "#FF0000", color: "#FFFFFF" }}>
+					X
+				</button>
+			),
+			ignoreRowClick: true,
+		},
 	];
+
+	const handleDelete = (row) => {
+		if (window.confirm(`Delete ${row.firstName} ${row.lastName}?`)) {
+			dispatch(
+				deleteEmployee({ firstName: row.firstName, lastName: row.lastName })
+			);
+		}
+	};
 
 	// Filter employees based on search input
 	const filteredEmployees = employees.filter((employee) =>

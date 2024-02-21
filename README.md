@@ -9,6 +9,7 @@ This is a project focused on migrating a HR application from jQuery to the moder
 - React Data Table Component: v7.6.2
 - React Datepicker: v6.1.0
 - React Select: v5.8.0
+- React Redux: v9.1.0
 
 ## Development Environment
 
